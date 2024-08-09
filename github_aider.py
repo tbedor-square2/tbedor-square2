@@ -32,34 +32,15 @@ def spawn_aider_session(prompt):
     
     coder.run(prompt)
 
-def branch_exists(branch_name):
-    url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/branches/{branch_name}"
-    headers = {
-        "Authorization": f"token {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github.v3+json"
-    }
-    response = requests.get(url, headers=headers)
-    return response.status_code == 200
+def checkout_branch(branch_name, base_branch="main"):
+    subprocess.run(["git", "checkout", "-b", branch_name, f"origin/{base_branch}"], check=True)
 
-def create_branch(issue, base_branch="main"):
-    branch_name = "feature-branch-for-issue-{}".format(issue['number'])
-    url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/git/refs"
-    headers = {
-        "Authorization": f"token {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github.v3+json"
-    }
-    base_branch_url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/git/refs/heads/{base_branch}"
-    base_branch_response = requests.get(base_branch_url, headers=headers)
-    base_branch_response.raise_for_status()
-    base_sha = base_branch_response.json()["object"]["sha"]
+def commit_changes(file_path, commit_message):
+    subprocess.run(["git", "add", file_path], check=True)
+    subprocess.run(["git", "commit", "-m", commit_message], check=True)
 
-    data = {
-        "ref": f"refs/heads/{branch_name}",
-        "sha": base_sha
-    }
-    response = requests.post(url, headers=headers, json=data)
-    response.raise_for_status()
-    return response.json()
+def push_branch(branch_name):
+    subprocess.run(["git", "push", "-u", "origin", branch_name], check=True)
 
 
     
@@ -107,7 +88,12 @@ def main():
     issues = get_issues()
     aider_issues = filter_issues(issues)
     for issue in aider_issues:
-        create_branch(issue)
+        branch_name = f"feature-branch-for-issue-{issue['number']}"
+        checkout_branch(branch_name)
+        issue_summary = get_issue_summary_prompt(issue)
+        spawn_aider_session(issue_summary)
+        commit_changes("new_file.txt", f"Add new file for issue #{issue['number']}")
+        push_branch(branch_name)
         issue_summary = get_issue_summary_prompt(issue)
         spawn_aider_session(issue_summary)
         create_pull_request(issue)
