@@ -51,7 +51,23 @@ def create_pull_request(issue):
     return response.json()
 
 def get_issue_summary_prompt(issue):
-    """TODO"""
+    """
+    Convert the issue API response into a textual summary of what the issue is.
+    """
+    title = issue.get('title', 'No title')
+    body = issue.get('body', 'No description')
+    issue_number = issue.get('number', 'No number')
+    labels = [label['name'] for label in issue.get('labels', [])]
+    state = issue.get('state', 'No state')
+
+    summary = (
+        f"Issue #{issue_number}\n"
+        f"Title: {title}\n"
+        f"Description: {body}\n"
+        f"Labels: {', '.join(labels)}\n"
+        f"State: {state}\n"
+    )
+    return summary
 
 def main():
     issues = get_issues()
