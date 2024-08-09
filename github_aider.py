@@ -25,7 +25,7 @@ def filter_issues(issues):
 
 def spawn_aider_session(issue):
     # Assuming aider is a command line tool that can be invoked with subprocess
-    command = ["aider", "--write-pytest", issue['html_url']]
+    command = ["aider", issue['html_url']]
     subprocess.run(command)
 
 def create_pull_request(issue):
