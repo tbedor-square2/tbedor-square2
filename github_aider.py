@@ -1,4 +1,4 @@
-import requests
+import subprocess
 import subprocess
 import os
 
@@ -9,16 +9,8 @@ REPO_NAME = "tbedor-square2"
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
 def get_issues():
-    url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/issues"
-    headers = {
-        "Authorization": f"token {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github.v3+json"
-    }
-    print(f"Requesting URL: {url}")
-    response = requests.get(url, headers=headers)
-    print(f"Response Status Code: {response.status_code}")
-    response.raise_for_status()
-    return response.json()
+    result = subprocess.run(["gh", "issue", "list", "--repo", f"{REPO_OWNER}/{REPO_NAME}", "--state", "open", "--json", "number,title,body,labels,state"], capture_output=True, text=True, check=True)
+    return json.loads(result.stdout)
 
 def filter_issues(issues):
     return [issue for issue in issues if "aider" in [label['name'] for label in issue['labels']] and issue['state'] == 'open']
@@ -44,25 +36,15 @@ def push_branch(branch_name):
 
 
 
-def create_pull_request(issue):
-    
-    url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/pulls"
-    headers = {
-        "Authorization": f"token {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github.v3+json"
-    }
-    data = {
-        "title": f"Fix for issue #{issue['number']}",
-        "head": "feature-branch",
-        "base": "main",
-        "body": f"Automated fix for issue #{issue['number']}"
-    }
-    print(f"Creating pull request with data: {data}")
-    response = requests.post(url, headers=headers, json=data)
-    print(f"Response Status Code: {response.status_code}")
-    print(f"Response Content: {response.content}")
-    response.raise_for_status()
-    return response.json()
+def create_pull_request(issue, branch_name):
+    subprocess.run([
+        "gh", "pr", "create",
+        "--repo", f"{REPO_OWNER}/{REPO_NAME}",
+        "--head", branch_name,
+        "--base", "main",
+        "--title", f"Fix for issue #{issue['number']}",
+        "--body", f"Automated fix for issue #{issue['number']}"
+    ], check=True)
 
 def get_issue_summary_prompt(issue):
     """
@@ -95,7 +77,7 @@ def main():
         push_branch(branch_name)
         issue_summary = get_issue_summary_prompt(issue)
         spawn_aider_session(issue_summary)
-        create_pull_request(issue)
+        create_pull_request(issue, branch_name)
 
 if __name__ == "__main__":
     main()
