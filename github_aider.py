@@ -10,8 +10,17 @@ REPO_NAME = "tbedor-square2"
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
 def get_issues():
-    result = subprocess.run(["gh", "issue", "list", "--repo", f"{REPO_OWNER}/{REPO_NAME}", "--state", "open", "--json", "number,title,body,labels,state"], capture_output=True, text=True, check=True)
-    return json.loads(result.stdout)
+    try:
+        result = subprocess.run(
+            ["gh", "issue", "list", "--repo", f"{REPO_OWNER}/{REPO_NAME}", "--state", "open", "--json", "number,title,body,labels,state"],
+            capture_output=True, text=True, check=True
+        )
+        return json.loads(result.stdout)
+    except subprocess.CalledProcessError as e:
+        print(f"Error: {e}")
+        print(f"Output: {e.output}")
+        print(f"Stderr: {e.stderr}")
+        raise
 
 def filter_issues(issues):
     return [issue for issue in issues if "aider" in [label['name'] for label in issue['labels']] and issue['state'] == 'open']
