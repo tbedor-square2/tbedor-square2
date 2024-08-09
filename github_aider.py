@@ -60,7 +60,26 @@ def create_branch(branch_name, base_branch="main"):
     response.raise_for_status()
     return response.json()
 
+def make_commit(branch_name, file_path, commit_message, content):
+    url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/contents/{file_path}"
+    headers = {
+        "Authorization": f"token {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    data = {
+        "message": commit_message,
+        "content": content,
+        "branch": branch_name
+    }
+    response = requests.put(url, headers=headers, json=data)
+    response.raise_for_status()
+    return response.json()
+
 def create_pull_request(issue):
+    branch_name = "feature-branch"
+    if not branch_exists(branch_name):
+        create_branch(branch_name)
+        make_commit(branch_name, "README.md", "Update README", "VXBkYXRlIFJFQURNRSBjb250ZW50Cg==")  # Base64 encoded content
     branch_name = "feature-branch"
     if not branch_exists(branch_name):
         create_branch(branch_name)
