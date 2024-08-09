@@ -23,10 +23,16 @@ def get_issues():
 def filter_issues(issues):
     return [issue for issue in issues if "aider" in [label['name'] for label in issue['labels']] and issue['state'] == 'open']
 
-def spawn_aider_session(issue):
-    # Assuming aider is a command line tool that can be invoked with subprocess
-    command = ["aider", issue['html_url']]
-    subprocess.run(command)
+def spawn_aider_session(prompt):
+    
+    from aider.coders import Coder
+    from aider.models import Model
+    
+    import pdb; pdb.set_trace()
+    
+    coder = Coder.create(main_model=Model("gpt-4o"))
+    
+    coder.run(prompt)
 
 def create_pull_request(issue):
     url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/pulls"
@@ -44,11 +50,15 @@ def create_pull_request(issue):
     response.raise_for_status()
     return response.json()
 
+def get_issue_summary_prompt(issue):
+    """TODO"""
+
 def main():
     issues = get_issues()
     aider_issues = filter_issues(issues)
     for issue in aider_issues:
-        spawn_aider_session(issue)
+        issue_summary = get_issue_summary_prompt(issue)
+        spawn_aider_session(issue_summary)
         create_pull_request(issue)
 
 if __name__ == "__main__":
