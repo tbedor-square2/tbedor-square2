@@ -22,7 +22,8 @@ def get_issues():
         print(f"Stderr: {e.stderr}")
         raise
 
-def filter_issues(issues):
+def filter_issues(issues):  
+    import pdb; pdb.set_trace()
     return [issue for issue in issues if "aider" in [label['name'] for label in issue['labels']] and issue['state'] == 'open']
 
 def spawn_aider_session(prompt):
@@ -78,7 +79,7 @@ def get_issue_summary_prompt(issue):
 def main():
     issues = get_issues()
     print(f"Total issues found: {len(issues)}")
-    aider_issues = filter_issues(issues)
+    aider_issues = issues #filter_issues(issues)
     print(f"Total aider issues found: {len(aider_issues)}")
     for issue in aider_issues:
         branch_name = f"feature-branch-for-issue-{issue['number']}"
