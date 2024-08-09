@@ -4,8 +4,8 @@ import os
 
 # Constants
 GITHUB_API_URL = "https://api.github.com"
-REPO_OWNER = "tbedor-2"
-REPO_NAME = "tbedor-2"
+REPO_OWNER = "tbedor-square2"
+REPO_NAME = "tbedor-square2"
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
 def get_issues():
@@ -14,7 +14,9 @@ def get_issues():
         "Authorization": f"token {GITHUB_TOKEN}",
         "Accept": "application/vnd.github.v3+json"
     }
+    print(f"Requesting URL: {url}")
     response = requests.get(url, headers=headers)
+    print(f"Response Status Code: {response.status_code}")
     response.raise_for_status()
     return response.json()
 
