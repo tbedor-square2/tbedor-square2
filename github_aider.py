@@ -77,7 +77,9 @@ def get_issue_summary_prompt(issue):
 
 def main():
     issues = get_issues()
+    print(f"Total issues found: {len(issues)}")
     aider_issues = filter_issues(issues)
+    print(f"Total aider issues found: {len(aider_issues)}")
     for issue in aider_issues:
         branch_name = f"feature-branch-for-issue-{issue['number']}"
         checkout_branch(branch_name)
