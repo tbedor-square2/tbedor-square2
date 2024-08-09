@@ -2878,5 +2878,5 @@ reference = "artifactory"
 
 [metadata]
 lock-version = "2.0"
-python-versions = ">=3.11,<3.13"
-content-hash = "e715f97cff47a8eb3287c5774a4ae655685eadc11f78d9251f646e74845d94fb"
+python-versions = ">3.11,<3.13"
+content-hash = "ae4fc6d54bb832f25be5d6f1d9e9b12828df2eff22071a0e98bd624c72b3a48f"

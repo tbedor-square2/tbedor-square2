@@ -6,8 +6,9 @@ authors = ["Tom Bedor <tbedor@squareup.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.11,<3.13"
+python = ">3.11,<3.13"
 aider-chat = "^0.48.1"
+gitpython = "^3.1.14"
 
 [[tool.poetry.source]]
 name = "artifactory"
