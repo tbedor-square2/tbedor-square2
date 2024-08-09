@@ -32,7 +32,38 @@ def spawn_aider_session(prompt):
     
     coder.run(prompt)
 
+def branch_exists(branch_name):
+    url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/branches/{branch_name}"
+    headers = {
+        "Authorization": f"token {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    response = requests.get(url, headers=headers)
+    return response.status_code == 200
+
+def create_branch(branch_name, base_branch="main"):
+    url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/git/refs"
+    headers = {
+        "Authorization": f"token {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    base_branch_url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/git/refs/heads/{base_branch}"
+    base_branch_response = requests.get(base_branch_url, headers=headers)
+    base_branch_response.raise_for_status()
+    base_sha = base_branch_response.json()["object"]["sha"]
+
+    data = {
+        "ref": f"refs/heads/{branch_name}",
+        "sha": base_sha
+    }
+    response = requests.post(url, headers=headers, json=data)
+    response.raise_for_status()
+    return response.json()
+
 def create_pull_request(issue):
+    branch_name = "feature-branch"
+    if not branch_exists(branch_name):
+        create_branch(branch_name)
     url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/pulls"
     headers = {
         "Authorization": f"token {GITHUB_TOKEN}",
