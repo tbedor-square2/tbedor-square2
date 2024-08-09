@@ -86,7 +86,6 @@ def main():
         checkout_branch(branch_name)
         issue_summary = get_issue_summary_prompt(issue)
         spawn_aider_session(issue_summary)
-        commit_changes("new_file.txt", f"Add new file for issue #{issue['number']}")
         push_branch(branch_name)
         issue_summary = get_issue_summary_prompt(issue)
         spawn_aider_session(issue_summary)
