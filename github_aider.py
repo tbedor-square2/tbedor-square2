@@ -76,9 +76,6 @@ def make_commit(branch_name, file_path, commit_message, content):
     return response.json()
 
 def create_pull_request(issue):
-    branch_name = "feature-branch"
-    if not branch_exists(branch_name):
-        create_branch(branch_name)
         make_commit(branch_name, "new_file.txt", "Add new file", "U29tZSBjb250ZW50IGZvciB0aGUgbmV3IGZpbGUu")  # Base64 encoded content
     branch_name = "feature-branch"
     if not branch_exists(branch_name):
