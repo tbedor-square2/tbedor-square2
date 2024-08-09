@@ -43,7 +43,6 @@ def push_branch(branch_name):
     subprocess.run(["git", "push", "-u", "origin", branch_name], check=True)
 
 
-    
 
 def create_pull_request(issue):
     
