@@ -41,7 +41,8 @@ def branch_exists(branch_name):
     response = requests.get(url, headers=headers)
     return response.status_code == 200
 
-def create_branch(branch_name, base_branch="main"):
+def create_branch(issue, base_branch="main"):
+    branch_name = "feature-branch-for-issue-{}".format(issue['number'])
     url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/git/refs"
     headers = {
         "Authorization": f"token {GITHUB_TOKEN}",
@@ -60,28 +61,11 @@ def create_branch(branch_name, base_branch="main"):
     response.raise_for_status()
     return response.json()
 
-def make_commit(branch_name, file_path, commit_message, content):
-    url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/contents/{file_path}"
-    headers = {
-        "Authorization": f"token {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github.v3+json"
-    }
-    data = {
-        "message": commit_message,
-        "content": content,
-        "branch": branch_name
-    }
-    response = requests.put(url, headers=headers, json=data)
-    response.raise_for_status()
-    return response.json()
+
+    
 
 def create_pull_request(issue):
-    branch_name = "feature-branch"
-    if not branch_exists(branch_name):
-        create_branch(branch_name)
-        make_commit(branch_name, "new_file.txt", "Add new file", "U29tZSBjb250ZW50IGZvciB0aGUgbmV3IGZpbGUu")  # Base64 encoded content
-    if not branch_exists(branch_name):
-        create_branch(branch_name)
+    
     url = f"{GITHUB_API_URL}/repos/{REPO_OWNER}/{REPO_NAME}/pulls"
     headers = {
         "Authorization": f"token {GITHUB_TOKEN}",
@@ -123,6 +107,7 @@ def main():
     issues = get_issues()
     aider_issues = filter_issues(issues)
     for issue in aider_issues:
+        create_branch(issue)
         issue_summary = get_issue_summary_prompt(issue)
         spawn_aider_session(issue_summary)
         create_pull_request(issue)
