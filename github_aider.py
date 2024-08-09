@@ -46,7 +46,10 @@ def create_pull_request(issue):
         "base": "main",
         "body": f"Automated fix for issue #{issue['number']}"
     }
+    print(f"Creating pull request with data: {data}")
     response = requests.post(url, headers=headers, json=data)
+    print(f"Response Status Code: {response.status_code}")
+    print(f"Response Content: {response.content}")
     response.raise_for_status()
     return response.json()
 
