@@ -4,8 +4,8 @@ import os
 
 # Constants
 GITHUB_API_URL = "https://api.github.com"
-REPO_OWNER = "your-repo-owner"
-REPO_NAME = "your-repo-name"
+REPO_OWNER = "tbedor-2"
+REPO_NAME = "tbedor-2"
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
 def get_issues():
