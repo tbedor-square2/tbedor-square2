@@ -28,8 +28,6 @@ def spawn_aider_session(prompt):
     from aider.coders import Coder
     from aider.models import Model
     
-    import pdb; pdb.set_trace()
-    
     coder = Coder.create(main_model=Model("gpt-4o"))
     
     coder.run(prompt)
