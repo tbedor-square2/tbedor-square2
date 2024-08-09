@@ -1,3 +1,4 @@
+from datetime import datetime
 import subprocess
 import subprocess
 import os
@@ -83,7 +84,8 @@ def main():
     aider_issues = issues #filter_issues(issues)
     print(f"Total aider issues found: {len(aider_issues)}")
     for issue in aider_issues:
-        branch_name = f"feature-branch-for-issue-{issue['number']}"
+        datetime_str = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        branch_name = f"feature-branch-for-issue-{issue['number']}-{datetime_str}"
         checkout_branch(branch_name)
         issue_summary = get_issue_summary_prompt(issue)
         spawn_aider_session(issue_summary)
