@@ -33,7 +33,7 @@ def spawn_aider_session(prompt):
     from aider.models import Model
     from aider.io import InputOutput
     
-    coder = Coder.create(main_model=Model("gpt-4o"), io=InputOutput(yes=True))
+    coder = Coder.create(main_model=Model("gpt-4o"), io=InputOutput(yes=True), auto_commit=True)
     
     coder.run(prompt)
 
